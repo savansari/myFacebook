@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" type="text/css" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'users/style.css' %}">
+    <title>Document</title>
+</head>
+    <body>
+        <div class="container">
+            <h1>Welcome {{post.created_by.first_name}} to posts</h1>  
+            <a href="/users" class="button">Users Page</a>
+            <hr> 
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <h2>Create a new Post</h2>
+            <hr>            
+            <form  class="form-horizontal" action="/create/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="new_post">New Post:</label>
+                    <div>
+                        <textarea name="content" id="" cols="30" rows="10"></textarea>
+                    </div>
+                    <input type="submit" value="Post on MyFacebook">
+                </div>
+            </form>  
+            <div>
+                {% if not posts %}
+                <h4>No posts yet</h4>
+                {% else %}
+                <div class="post-container">
+                    
+                    {% for post in posts %}
+                    <div class="post">
+                        <hr>
+                        <h3>{{ post.created_by.first_name }} {{ post.created_by.last_name }}</h3>
+                        <p>{{ post.content }}</p>
+                        <div class="comments">
+                        {% if not post.comments.all %}
+                            <p>No comments yet</p>
+                        {% else %}
+                            {% for comment in post.comments.all %}
+                            <div class="comment">
+                                <h4>{{ comment.created_by.first_name }} {{ comment.created_by.last_name }}</h4>
+                                <p>{{ comment.content }}</p>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        </div>
+                        <hr>
+                        <form class="form-horizontal" action="/comments/create/" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            <label for="content">Comment on this post:</label>
+                            <div>
+                                <textarea name="content" id="" cols="30" rows="10"></textarea>
+                            </div>
+                            <input type="submit" value="Comment">
+                        </div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>          
+        </div>
+    </body>
+</html>

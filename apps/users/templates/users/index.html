@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" 
+   href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+  <link rel="stylesheet" type="text/css" 
+   href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   {% load static %}
+   <link rel="stylesheet" href="{% static 'users/style.css' %}">
+  <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h1>{{request.session.user_id}} Users Page</h1>
+        <a href="/" class="button">Wall</a>       
+        <div class="panel panel-default">
+            <div class="panel-heading">Unmatched Users</div>
+            <div class="panel-body">
+                <table class="table" id="unmatched-users">
+                    <thead>
+                        <tr>
+                        <th>Row</th>
+                        <th>Full Name</th>        
+                        <th>Username</th>
+                        <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in unmatched_users %}
+                        <tr>
+                            <td>{{user.id}}</td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>            
+                            <td>{{ user.username }}</td>
+                            <td>
+                            <form action="/users/create_request/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="request_to" value="{{ user.id }}">
+                                <input type="submit" value="Add Friend">
+                            </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <div class="panel panel-default">
+            <div class="panel-heading">Requests Sent To Others</div>
+            <div class="panel-body">   
+                <table  class="table"  id="requests-sent">
+                <thead>
+                    <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in requested_friends %}
+                    <tr>
+                        <td>{{ user.first_name }}</td>
+                        <td>{{ user.last_name }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                        <form action="/users/remove_request/" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_to" value="{{ user.id }}">
+                            <input type="submit" value="Remove Request">
+                        </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">Requests Sent From Others</div>
+            <div class="panel-body">      
+                <table class="table" id="requests-from">
+                <thead>
+                    <tr>
+                    <th>Row</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in requests_from %}
+                    <tr>
+                        <td>{{user.id}}</td>
+                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                        <form action="/users/create_request/" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_to" value="{{ user.id }}">
+                            <input type="submit" value="Add Friend">
+                        </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+                <div class="panel-heading">Friends</div>
+                <div class="panel-body">    
+                    <table  class="table" id="friends">
+                    <thead>
+                        <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                        <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in mutual_friends %}
+                        <tr>
+                            <td>{{ user.first_name }}</td>
+                            <td>{{ user.last_name }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>
+                            <form action="/users/remove_request/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="request_to" value="{{ user.id }}">
+                                <input type="submit" value="Remove Friend">
+                            </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+  </div>
+</body>
+</html>
